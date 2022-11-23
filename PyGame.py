@@ -9,8 +9,8 @@ class Personagem(pg.sprite.Sprite):
         self.largura = 100
         self.altura = 50
 
-        self.personagem1 = pg.image.load('personagem1.png')
-        self.personagem2 = pg.image.load('personagem2.png')
+        self.personagem1 = pg.image.load('personagem1.png').convert_alpha()
+        self.personagem2 = pg.image.load('personagem2.png').convert_alpha()
         self.personagem1 = pg.transform.scale(self.personagem1, (self.largura, self.altura))
         self.personagem2 = pg.transform.scale(self.personagem2, (self.largura, self.altura))
 
@@ -18,10 +18,10 @@ class Personagem(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        self.movment
+        self.movimento()
         self.rect.center = (self.x, self.y)
     
-    def movment(self):
+    def movimento(self):
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT]:
             self.x -= self.vel
@@ -58,7 +58,7 @@ while corrida:
     ganha.fill((255, 255, 255))
 
     grupo_personagem.draw(ganha)
-    grupo_personagem.update
+    grupo_personagem.update()
 
     pg.display.update()
 
