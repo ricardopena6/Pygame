@@ -60,13 +60,13 @@ class carro(pg.sprite.Sprite):
         super().__init__()
         if numero == 1:
             self.x =190
-            self.image =pg.image.load('band_vermelha.png')
-            self.image = -4
+            self.image =pg.image.load('carro_vermelho.png')
+            self.vel = -4
 
 
         else:
             self.x = 460
-            self.image = pg.image.load('band_azul.png')
+            self.image = pg.image.load('carro_azul.png')
             self.vel = 5
 
         self.y = ALTURA / 2
@@ -76,7 +76,7 @@ class carro(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
 
 
-    def atualizacao(self):
+    def update(self):
         self.movimento()
         self.rect.center += (self.x, self.y)
 
@@ -93,11 +93,50 @@ class carro(pg.sprite.Sprite):
             self.vel *= -1
 
 
+class Tela(pg.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.img1 = pg.image.load('background.png')
+        self.img2 = pg.image.load('venceu.png')
+        self.img3 = pg.image.load('perdeu.png')
 
+        self.img1 = pg.transform.scale(self.img1, (LARGURA, ALTURA))
+        self.img2 = pg.transform.scale(self.img2, (LARGURA, ALTURA))
+        self.img3 = pg.transform.scale(self.img3, (LARGURA, ALTURA))
 
+        self.image = self.img1
+        self.x = 0
+        self.y = 0
 
+        self.rect = self.image.get_rect()
 
+    def update(self):
+        self.rect.topleft = (self.x, self.y)
 
+class Bandeira(pg.sprite.Sprite):
+    def __init__(self, numero):
+        super().__init__()
+        self.numero = numero
+        if self.numero == 1:
+            self.image = pg.image.load('bandeira_verde.png')
+            self.visible = False
+            self.x = 50
+        else:
+            self.image = pg.image.load('bandeira_branca.png')
+            self.visible = True
+            self.x = 580
+
+        self.y = ALTURA / 2
+        self.image = pg.transform.scale2x(self.image)
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        if self.visible:
+            self.rect.center = (self.x, self.y)
+
+def DisplayPontos():
+    texto_pontos = pontos_fonte.render(str(PONTOS) + ' /5', True, (255, 255, 255))
+    ganha.blit(texto_pontos, (255, 10))
 
 LARGURA = 640
 ALTURA = 480
@@ -106,6 +145,14 @@ pg.init()
 ganha = pg.display.set_mode((LARGURA, ALTURA))
 pg.display.set_caption("Atravessando a Rua")
 tempo = pg.time.Clock()
+
+
+PONTOS = 0
+pontos_fonte = pg.font.SysFont('comicsans', 80, True)
+tf = Tela()
+grupo_tela = pg.sprite.Group()
+grupo_tela.add(tf)
+
 
 personagem = Personagem()
 grupo_personagem = pg.sprite.Group()
@@ -125,7 +172,7 @@ while corrida:
         if e.type == pg.QUIT:
             corrida = False
 
-    ganha.fill((255, 255, 255))
+    grupo_tela.draw(ganha)
 
     grupo_personagem.draw(ganha)
     grupo_band.draw(ganha)
@@ -133,6 +180,9 @@ while corrida:
     grupo_personagem.update()
 
     grupo_band.update()
+
+    grupo_tela.update()
+    DisplayPontos()
 
     pg.display.update()
 
