@@ -16,6 +16,7 @@ class Personagem(pg.sprite.Sprite):
 
         self.image = self.personagem1
         self.rect = self.image.get_rect()
+        self.mask = pg.mask.from_surface(self.image)
 
     def update(self):
         self.movimento()
@@ -74,6 +75,7 @@ class carro(pg.sprite.Sprite):
         self.altura = 150
         self.image = pg.transform.scale(self.image, (self.largura, self.altura))
         self.rect = self.image.get_rect()
+        self.mask = pg.mask.from_surface(self.image)
 
 
     def update(self):
@@ -129,14 +131,72 @@ class Bandeira(pg.sprite.Sprite):
         self.y = ALTURA / 2
         self.image = pg.transform.scale2x(self.image)
         self.rect = self.image.get_rect()
+        self.mask = pg.mask.from_surface(self.image)
+
 
     def update(self):
         if self.visible:
+            self.colisao()
             self.rect.center = (self.x, self.y)
+
+
+def colisao(self):
+    global pontuacao, personagem
+
+    bate_band = pg.sprite.spritecollide(self, grupo_personagem, False,pg.sprite.collide_mask)
+    if bate_band:
+        self.visible = False
+
+        if self.number == 1:
+            band_branca.visible = True
+            if pontuacao < 5:
+                muda_nivel()
+
+            else:
+                band_verde.visible = True
+
+
+
 
 def DisplayPontos():
     texto_pontos = pontos_fonte.render(str(PONTOS) + ' /5', True, (255, 255, 255))
     ganha.blit(texto_pontos, (255, 10))
+
+ 
+def checa_bandeira():
+    for bandeira in bandeiras:
+        if not bandeira.visible:
+            bandeira.kill()
+
+        else:
+            if not bandeira.alive():
+                grupo_Band.add(bandeira)
+
+def muda_nivel():
+    global pontuacao
+
+    if band_vermelha.vel < 0:
+        band_vermelha.vel -= 1
+
+    else:
+        band_vermelha.vel+=1
+
+    if band_azul.vel < 0:
+        band_azul.vel-=1
+
+    else:
+        band_azul.vel+=1
+
+    pontuacao += 1 
+
+
+
+
+
+
+
+
+
 
 LARGURA = 640
 ALTURA = 480
@@ -165,6 +225,13 @@ band_azul = carro(2)
 grupo_band = pg.sprite.Group()
 grupo_band.add(band_vermelha,band_azul)
 
+band_verde = Bandeira(1)
+band_branca = Bandeira(2)
+grupo_Band = pg.sprite.Group() 
+grupo_Band.add(band_verde, band_branca)
+bandeiras = [band_verde, band_branca]
+
+
 corrida = True
 while corrida:
     tempo.tick(60)
@@ -173,16 +240,24 @@ while corrida:
             corrida = False
 
     grupo_tela.draw(ganha)
+    DisplayPontos()
+    checa_bandeira()
+
+
+
+
 
     grupo_personagem.draw(ganha)
     grupo_band.draw(ganha)
+    grupo_Band.draw(ganha)
    
     grupo_personagem.update()
 
     grupo_band.update()
+    grupo_Band.update()
 
     grupo_tela.update()
-    DisplayPontos()
+    
 
     pg.display.update()
 
