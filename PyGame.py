@@ -1,5 +1,5 @@
 import pygame as pg
-
+import time
 class Personagem(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -20,6 +20,10 @@ class Personagem(pg.sprite.Sprite):
 
     def update(self):
         self.movimento()
+        self.correcao()
+        self.batida()
+
+        
         self.rect.center = (self.x, self.y)
     
     def movimento(self):
@@ -54,8 +58,10 @@ class Personagem(pg.sprite.Sprite):
             self.y = ALTURA - self.altura / 2
 
 
-
-
+def batida(self):
+    checa_bandeira = pg.sprite.spritecollide(self,grupo_band,False,pg.sprite.collide_mask)
+    if checa_bandeira:
+        explosao.explode(self.x, self.y)
 class carro(pg.sprite.Sprite):
     def __init__(self, numero):
         super().__init__()
@@ -156,7 +162,36 @@ def colisao(self):
                 band_verde.visible = True
 
 
+                
+class explosao(object):
+    def __init__(self):
+        self.fantasia = 1
+        self.largura = 140
+        self.altura = 140
+        self.image = pg.image.load('explosao'+str(self.fantasia)+'.png')
+        self.image = pg.transform.scale(self.image,(self.largura,self.altura))
 
+    def explode(self,x,y):
+        x = x - self.largura/2
+        y = y - self.altura/2
+        some_personagem()
+
+        while self.fantasia < 9:
+            self.image = pg.image.load('explosao'+str(self.fantasia)+'.png')
+            self.image = pg.transform.scale(self.image,(self.largura,self.altura))
+            ganha.blit(self.image,(x,y))
+            pg.display.update()
+
+            self.fantasia+=1
+            time.sleep(0.1)
+
+        some_resto()
+
+
+
+
+
+                
 
 def DisplayPontos():
     texto_pontos = pontos_fonte.render(str(PONTOS) + ' /5', True, (255, 255, 255))
@@ -190,6 +225,26 @@ def muda_nivel():
     pontuacao += 1 
 
 
+
+def some_personagem():
+    global personaem
+
+    personagem.kill()
+    grupo_tela.draw(ganha)
+    grupo_band.draw(ganha)
+    grupo_Band.draw(ganha)
+
+    grupo_tela.update()
+    grupo_band.update()
+    grupo_Band.update()
+
+    pg.display.update()
+
+
+def some_resto():
+    grupo_band.empty()
+    grupo_Band.empty()
+    bandeiras.clear()
 
 
 
@@ -231,6 +286,7 @@ grupo_Band = pg.sprite.Group()
 grupo_Band.add(band_verde, band_branca)
 bandeiras = [band_verde, band_branca]
 
+explosao = explosao()
 
 corrida = True
 while corrida:
@@ -247,13 +303,15 @@ while corrida:
 
 
 
-    grupo_personagem.draw(ganha)
+    
     grupo_band.draw(ganha)
+    grupo_personagem.draw(ganha)
     grupo_Band.draw(ganha)
    
     grupo_personagem.update()
 
-    grupo_band.update()
+    
+    grupo_personagem.update()
     grupo_Band.update()
 
     grupo_tela.update()
