@@ -1,5 +1,6 @@
 import pygame as pg
 import time
+import random
 class Personagem(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -64,47 +65,45 @@ class Personagem(pg.sprite.Sprite):
         checa_bandeira = pg.sprite.spritecollide(self,grupo_band,False,pg.sprite.collide_mask)
         if checa_bandeira:
             explosao.explode(self.x, self.y)
+
+
 class carro(pg.sprite.Sprite):
     def __init__(self, numero):
         super().__init__()
         if numero == 1:
             self.x = 190
             self.image =pg.image.load('carro_vermelho.png')
-            self.vel = -4
-            
-            
-
+            self.vel = -1*random.randint(1,6)
 
         else:
             self.x = 460
             self.image = pg.image.load('carro_azul.png')
-            self.vel = 5
-            
+            self.vel = random.randint(4,9)
+        
         self.y = ALTURA / 2
         self.largura = 100
         self.altura = 150
         self.image = pg.transform.scale(self.image, (self.largura, self.altura))
         self.rect = self.image.get_rect()
-        self.rect.x = 145
-        self.rect.y = ALTURA / 2
+        self.rect.center = (self.x, self.y)
         self.mask = pg.mask.from_surface(self.image)
 
 
     def update(self):
         self.movimento()
-        self.rect.center = (self.rect.x, self.rect.y)
+        self.rect.center = (self.x, self.y)
 
 
     def movimento(self):
-        self.rect.y += self.vel
+        self.y += self.vel
 
-        if self.rect.y - self.altura / 2 < 0 :
-            self.rect.y = self.altura / 2
-            self.vel *= -1
+        if self.vel < 0:
+            if self.y <= -75:
+                self.y = 555
 
-        elif self.rect.y + self.altura / 2 > ALTURA:
-            self.rect.y = ALTURA - self.altura / 2
-            self.vel *= -1
+        if self.vel > 0:
+            if self.y >= 555:
+                self.y = -75
 
 
 class Tela(pg.sprite.Sprite):
@@ -149,7 +148,7 @@ class Bandeira(pg.sprite.Sprite):
     def update(self):
         if self.visible:
             self.colisao()
-            self.rect.center = (self.x, self.y)
+            self.rect.center = (self.x, self.y+1)
 
 
     def colisao(self):
@@ -321,23 +320,15 @@ while corrida:
     grupo_tela.draw(ganha)
 #    DisplayPontos()
     checa_bandeira()
-
-
-
-
-
     
     grupo_band.draw(ganha)
     grupo_personagem.draw(ganha)
     grupo_Band.draw(ganha)
     
-    
-
-    
     grupo_personagem.update()
+    grupo_band.update()
     grupo_Band.update()
     grupo_tela.update()
-    
 
     pg.display.update()
 
