@@ -9,8 +9,10 @@ class Personagem(pg.sprite.Sprite):
         self.largura = 100
         self.altura = 50
 
-        self.personagem1 = pg.image.load('personagem1.png').convert_alpha()
-        self.personagem2 = pg.image.load('personagem2.png').convert_alpha()
+        # IMAGENS
+
+        self.personagem1 = pg.image.load('personagem1.png')
+        self.personagem2 = pg.image.load('personagem2.png')
         self.personagem1 = pg.transform.scale(self.personagem1, (self.largura, self.altura))
         self.personagem2 = pg.transform.scale(self.personagem2, (self.largura, self.altura))
 
@@ -58,46 +60,50 @@ class Personagem(pg.sprite.Sprite):
             self.y = ALTURA - self.altura / 2
 
 
-def batida(self):
-    checa_bandeira = pg.sprite.spritecollide(self,grupo_band,False,pg.sprite.collide_mask)
-    if checa_bandeira:
-        explosao.explode(self.x, self.y)
+    def batida(self):
+        checa_bandeira = pg.sprite.spritecollide(self,grupo_band,False,pg.sprite.collide_mask)
+        if checa_bandeira:
+            explosao.explode(self.x, self.y)
 class carro(pg.sprite.Sprite):
     def __init__(self, numero):
         super().__init__()
         if numero == 1:
-            self.x =190
+            self.x = 190
             self.image =pg.image.load('carro_vermelho.png')
             self.vel = -4
+            
+            
 
 
         else:
             self.x = 460
             self.image = pg.image.load('carro_azul.png')
             self.vel = 5
-
+            
         self.y = ALTURA / 2
         self.largura = 100
         self.altura = 150
         self.image = pg.transform.scale(self.image, (self.largura, self.altura))
         self.rect = self.image.get_rect()
+        self.rect.x = 145
+        self.rect.y = ALTURA / 2
         self.mask = pg.mask.from_surface(self.image)
 
 
     def update(self):
         self.movimento()
-        self.rect.center += (self.x, self.y)
+        self.rect.center = (self.rect.x, self.rect.y)
 
 
     def movimento(self):
-        self.y += self.vel
+        self.rect.y += self.vel
 
-        if self.y - self.altura / 2 < 0 :
-            self.y = self.altura / 2
+        if self.rect.y - self.altura / 2 < 0 :
+            self.rect.y = self.altura / 2
             self.vel *= -1
 
-        elif self.y + self.altura / 2 > ALTURA:
-            self.y = ALTURA - self.altura / 2
+        elif self.rect.y + self.altura / 2 > ALTURA:
+            self.rect.y = ALTURA - self.altura / 2
             self.vel *= -1
 
 
@@ -146,17 +152,22 @@ class Bandeira(pg.sprite.Sprite):
             self.rect.center = (self.x, self.y)
 
 
-def colisao(self):
-    global pontuacao, personagem
+    def colisao(self):
+        global pontuacao, personagem
 
-    bate_band = pg.sprite.spritecollide(self, grupo_personagem, False,pg.sprite.collide_mask)
-    if bate_band:
-        self.visible = False
+        bate_band = pg.sprite.spritecollide(self, grupo_personagem, False,pg.sprite.collide_mask)
+        if bate_band:
+            self.visible = False
 
-        if self.number == 1:
-            band_branca.visible = True
-            if pontuacao < 5:
-                muda_nivel()
+            if self.number == 1:
+                band_branca.visible = True
+                if pontuacao < 5:
+                    muda_nivel()
+                else:
+                    grupo_personagem.empty()
+                    some_resto()
+
+                    TelaFim(1)
 
             else:
                 band_verde.visible = True
@@ -186,16 +197,18 @@ class explosao(object):
             time.sleep(0.1)
 
         some_resto()
-
+        TelaFim(0)
 
 
 
 
                 
 
-def DisplayPontos():
-    texto_pontos = pontos_fonte.render(str(PONTOS) + ' /5', True, (255, 255, 255))
-    ganha.blit(texto_pontos, (255, 10))
+#def DisplayPontos():
+#    global jogoS
+#    if jogoS:
+#        texto_pontos = pontos_fonte.render(str(PONTOS) + ' /5', True, (255, 255, 255))
+#        ganha.blit(texto_pontos, (255, 10))
 
  
 def checa_bandeira():
@@ -248,7 +261,15 @@ def some_resto():
 
 
 
+def TelaFim(n):
+    global jogoS
 
+    jogoS == False
+
+    if n == 0:
+        tf.image = tf.img3
+    elif n == 1:
+        tf.image = tf.img2
 
 
 
@@ -288,15 +309,17 @@ bandeiras = [band_verde, band_branca]
 
 explosao = explosao()
 
+jogoS = True
+
 corrida = True
 while corrida:
     tempo.tick(60)
-    for e  in pg.event.get():
+    for e in pg.event.get():
         if e.type == pg.QUIT:
             corrida = False
 
     grupo_tela.draw(ganha)
-    DisplayPontos()
+#    DisplayPontos()
     checa_bandeira()
 
 
@@ -307,13 +330,12 @@ while corrida:
     grupo_band.draw(ganha)
     grupo_personagem.draw(ganha)
     grupo_Band.draw(ganha)
-   
-    grupo_personagem.update()
+    
+    
 
     
     grupo_personagem.update()
     grupo_Band.update()
-
     grupo_tela.update()
     
 
