@@ -1,6 +1,10 @@
 import pygame as pg
 import time
 import random
+
+
+
+
 class Personagem(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -65,7 +69,7 @@ class Personagem(pg.sprite.Sprite):
         checa_bandeira = pg.sprite.spritecollide(self,grupo_band,False,pg.sprite.collide_mask)
         if checa_bandeira:
             explosao.explode(self.x, self.y)
-
+        
 
 class carro(pg.sprite.Sprite):
     def __init__(self, numero):
@@ -148,11 +152,11 @@ class Bandeira(pg.sprite.Sprite):
     def update(self):
         if self.visible:
             self.colisao()
-            self.rect.center = (self.x, self.y+1)
+            self.rect.center = (self.x, self.y)
 
 
     def colisao(self):
-        global pontuacao, personagem
+        global PONTOS, personagem
 
         bate_band = pg.sprite.spritecollide(self, grupo_personagem, False,pg.sprite.collide_mask)
         if bate_band:
@@ -160,13 +164,13 @@ class Bandeira(pg.sprite.Sprite):
 
             if self.number == 1:
                 band_branca.visible = True
-                if pontuacao < 5:
+                if PONTOS < 5:
                     muda_nivel()
                 else:
                     grupo_personagem.empty()
                     some_resto()
 
-                    TelaFim(1)
+                    TelaFim()
 
             else:
                 band_verde.visible = True
@@ -203,11 +207,11 @@ class explosao(object):
 
                 
 
-#def DisplayPontos():
-#    global jogoS
-#    if jogoS:
-#        texto_pontos = pontos_fonte.render(str(PONTOS) + ' /5', True, (255, 255, 255))
-#        ganha.blit(texto_pontos, (255, 10))
+def DisplayPontos():
+    global jogoS
+    if jogoS:
+        texto_pontos = pontos_fonte.render(str(PONTOS) + ' /5', True, (255, 255, 255))
+        ganha.blit(texto_pontos, (255, 10))
 
  
 def checa_bandeira():
@@ -220,7 +224,7 @@ def checa_bandeira():
                 grupo_Band.add(bandeira)
 
 def muda_nivel():
-    global pontuacao
+    global PONTOS
 
     if band_vermelha.vel < 0:
         band_vermelha.vel -= 1
@@ -234,7 +238,7 @@ def muda_nivel():
     else:
         band_azul.vel+=1
 
-    pontuacao += 1 
+    PONTOS += 1 
 
 
 
@@ -318,7 +322,8 @@ while corrida:
             corrida = False
 
     grupo_tela.draw(ganha)
-#    DisplayPontos()
+
+    DisplayPontos()
     checa_bandeira()
     
     grupo_band.draw(ganha)
